@@ -1,71 +1,102 @@
-#include <osg/Geometry>
-#include <osg/Geode>
-#include <osg/Group>
-#include <osg/Material>
-#include <osg/Texture2D>
-#include <osg/MatrixTransform>
-#include <osgDB/ReadFile>
+#include <iostream>
 #include <osgViewer/Viewer>
+#include <osgViewer/ViewerEventHandlers>
+#include <osgGA/TrackballManipulator>
+#include <osgGA/GUIEventHandler>
 
 #include <wtypes.h>
+
+#include "Game.h"
 
 using namespace osg;
 using namespace osgDB;
 using namespace osgViewer;
+using namespace osgGA;
 using namespace std;
 
 void getDesktopResolution(int& horizontal, int& vertical);
 
-Node * createScene()
+class KeyHandler : public GUIEventHandler
 {
-	Group * scene = new Group();
+private:
+	Viewer * viewer;
+	bool cameraMode = true;
 
-	Node * playerCar = readNodeFile("Data/Car/car.3ds");
-
-	if (!playerCar)
+public:
+	KeyHandler(Viewer * viewer)
 	{
-		cout << "Couldn't load model ( Data/Car/car.3ds )." << endl;
-		return NULL;
+		this->viewer = viewer;
 	}
 
-	StateSet * stateSet = playerCar->getOrCreateStateSet();
-	stateSet->ref();
-
-	Material *material = new Material();
-	Image *body_i = readImageFile("Data/Car/body.jpg");
-	Image *frontup_i = readImageFile("Data/Car/frontup.jpg");
-
-	if (!body_i || !frontup_i)
+public:
+	virtual bool handle(const GUIEventAdapter& ea, GUIActionAdapter&)
 	{
-		cout << "Couldn't load textures." << endl;
-		return NULL;
+		switch (ea.getEventType())
+		{
+		case(GUIEventAdapter::KEYDOWN):
+		{
+			cout << "Key pressed: " << ea.getKey() << endl;
+			switch (ea.getKey())
+			{
+			case 65470: // F1
+			{
+				if (cameraMode)
+				{
+					viewer->setCameraManipulator(new TrackballManipulator());
+				}
+				else
+				{
+					viewer->setCameraManipulator(NULL);
+					Vec3d eye(0.0, 600.0, 200.0);
+					Vec3d center(0.0, 0.0, 100.0);
+					Vec3d up(0.0, 0.0, 150.0);
+
+					viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
+				}
+				cameraMode = !cameraMode;
+				break;
+			}
+			}
+					
+		}
+
+		default:
+			return false;
+		}
 	}
-
-	Texture2D *body_t = new Texture2D;
-	body_t->setImage(body_i);
-
-	Texture2D *frontup_t = new Texture2D;
-	frontup_t->setImage(frontup_i);
-
-	stateSet->setAttribute(material);
-	stateSet->setTextureAttributeAndModes(1, body_t, StateAttribute::ON);
-	stateSet->setTextureAttributeAndModes(0, frontup_t, StateAttribute::ON);
-
-	scene->addChild(playerCar);
-
-	return scene;
-}
+};
 
 int main(int argc, char * argv[])
 {
-	Node * scene = createScene();
-	Viewer viewer;
+	Viewer * viewer = new Viewer();
+
+	Game * game = Game::getInstance(viewer);
+	ref_ptr<Group> scene = game->createScene();
+
 	int s_width, s_height;
 	getDesktopResolution(s_width, s_height);
 
-	viewer.setUpViewInWindow(100, 100, s_width - 200, s_height - 200);
-	viewer.setSceneData(scene);
-	return viewer.run();
+	viewer->setUpViewInWindow(100, 100, s_width - 200, s_height - 200);
+	viewer->setSceneData(scene);
+
+	ref_ptr<WindowSizeHandler> windowHandler = new WindowSizeHandler();
+	ref_ptr<KeyHandler> keyHandler = new KeyHandler(viewer);
+	viewer->addEventHandler(new StatsHandler);
+	viewer->addEventHandler(windowHandler);
+	viewer->addEventHandler(keyHandler);
+	viewer->realize();
+
+	Vec3d eye(0.0, 600.0, 200.0);
+	Vec3d center(0.0, 0.0, 100.0);
+	Vec3d up(0.0, 0.0, 150.0);
+
+	viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
+
+	while (!viewer->done())
+	{
+		cout << "Frame" << endl;
+		viewer->frame();
+	}
 }
 
 void getDesktopResolution(int& horizontal, int& vertical)
