@@ -20,12 +20,12 @@ ref_ptr<Group> Game::createScene()
 	this->scene = new Group();
 	this->player = this->createPlayer();
 	
-	this->scene->addChild(this->player);
+	this->scene->addChild(this->player->getTransform());
 
 	return this->scene;
 }
 
-ref_ptr<Node> Game::createPlayer()
+Player * Game::createPlayer()
 {
 	ref_ptr<Node> playerCar = readNodeFile("Data/Car/car.3ds");
 
@@ -35,8 +35,10 @@ ref_ptr<Node> Game::createPlayer()
 		return NULL;
 	}
 
-	ref_ptr<PositionAttitudeTransform> playerCarT = new PositionAttitudeTransform();
-	playerCarT->setPosition(Vec3d(0.0, 0.0, 0.0));
+	ref_ptr<MatrixTransform> playerCarT = new MatrixTransform();
+	Matrix mat;
+	mat.setTrans(Vec3d(0.0, 0.0, 0.0));
+	playerCarT->setMatrix(mat);
 
 	BoundingBox playerCarBB;
 	playerCarBB.init();
@@ -52,7 +54,20 @@ ref_ptr<Node> Game::createPlayer()
 	playerCarBox->addDrawable(new ShapeDrawable(new Box(playerCarBB.center(), x, y, z)));
 
 	playerCarT->addChild(playerCar);
-	//playerCarT->addChild(playerCarBox); debug later
 
-	return playerCarT;
+	Player * player = new Player(playerCar, playerCarT);
+	player->setFacingAngle(0.0);
+	cars.push_back(player);
+
+	return player;
+}
+
+Player * Game::getPlayer()
+{
+	return this->player;
+}
+
+vector<Car *> Game::getCars()
+{
+	return this->cars;
 }

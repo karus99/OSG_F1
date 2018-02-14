@@ -21,6 +21,7 @@ class KeyHandler : public GUIEventHandler
 private:
 	Viewer * viewer;
 	bool cameraMode = true;
+	vector<int> keysPressed = vector<int>();
 
 public:
 	KeyHandler(Viewer * viewer)
@@ -28,41 +29,88 @@ public:
 		this->viewer = viewer;
 	}
 
-public:
 	virtual bool handle(const GUIEventAdapter& ea, GUIActionAdapter&)
 	{
 		switch (ea.getEventType())
 		{
 		case(GUIEventAdapter::KEYDOWN):
 		{
-			cout << "Key pressed: " << ea.getKey() << endl;
-			switch (ea.getKey())
-			{
-			case 65470: // F1
-			{
-				if (cameraMode)
-				{
-					viewer->setCameraManipulator(new TrackballManipulator());
-				}
-				else
-				{
-					viewer->setCameraManipulator(NULL);
-					Vec3d eye(0.0, 600.0, 200.0);
-					Vec3d center(0.0, 0.0, 100.0);
-					Vec3d up(0.0, 0.0, 150.0);
+			// 65362, 119 - up
+			// 65361, 97 - left
+			// 65363, 100 - right
+			// 65364, 115 - down
 
-					viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
+			bool found = false;
+			for (int i = 0; i < keysPressed.size(); i++)
+			{
+				if (ea.getKey() == keysPressed[i])
+				{
+					found = true;
 				}
-				cameraMode = !cameraMode;
+			}
+
+			if(!found)
+				keysPressed.push_back(ea.getKey());
+			break;
+		}
+		case(GUIEventAdapter::KEYUP):
+		{
+			for (int i = 0; i < keysPressed.size(); i++)
+			{
+				if (ea.getKey() == keysPressed[i])
+					keysPressed.erase(keysPressed.begin() + i);
+			}
+			break;
+		}
+		}
+
+		for (int i = 0; i < keysPressed.size(); i++)
+		{
+			switch (keysPressed[i])
+			{
+			case 119:
+			case 65362:
+			{
+				Game * game = Game::getInstance(viewer);
+				Player * player = game->getPlayer();
+
+				player->addSpeed(0.5f);
+				break;
+			}
+			case 115:
+			case 65364:
+			{
+				Game * game = Game::getInstance(viewer);
+				Player * player = game->getPlayer();
+
+				player->addSpeed(-0.5f);
+				break;
+			}
+			case 97:
+			case 65361:
+			{
+				Game * game = Game::getInstance(viewer);
+				Player * player = game->getPlayer();
+
+				player->addAngularSpeed(0.5f);
+				break;
+			}
+			case 100:
+			case 65363:
+			{
+				Game * game = Game::getInstance(viewer);
+				Player * player = game->getPlayer();
+
+				player->addAngularSpeed(-0.5f);
 				break;
 			}
 			}
-					
 		}
 
-		default:
+		if (keysPressed.empty())
 			return false;
-		}
+		else
+			return true;
 	}
 };
 
@@ -92,9 +140,19 @@ int main(int argc, char * argv[])
 
 	viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
 
+	Player * player = game->getPlayer();
+	//player->addSpeed(20.0f);
+	vector<Car *> cars = game->getCars();
+
 	while (!viewer->done())
 	{
-		cout << "Frame" << endl;
+		//cout << "pSpeed: " << player->getSpeed() << endl;
+
+		for (int i = 0; i < cars.size(); i++)
+		{
+			cars[i]->update();
+		}
+
 		viewer->frame();
 	}
 }
