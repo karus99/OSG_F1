@@ -7,6 +7,7 @@
 #include <wtypes.h>
 
 #include "Game.h"
+#include "Camera.h"
 
 using namespace osg;
 using namespace osgDB;
@@ -140,14 +141,14 @@ int main(int argc, char * argv[])
 
 	viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
 
+	ref_ptr<CameraUpdateCallback> cameraUpdateCallback = new CameraUpdateCallback(viewer);
+	viewer->getCamera()->addUpdateCallback(cameraUpdateCallback);
+
 	Player * player = game->getPlayer();
-	//player->addSpeed(20.0f);
 	vector<Car *> cars = game->getCars();
 
 	while (!viewer->done())
 	{
-		//cout << "pSpeed: " << player->getSpeed() << endl;
-
 		for (int i = 0; i < cars.size(); i++)
 		{
 			cars[i]->update();

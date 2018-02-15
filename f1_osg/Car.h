@@ -30,5 +30,6 @@ public:
 	float getAngularSpeed();
 	void update();
 	void setFacingAngle(double angle);
+	double getFacingAngle();
 	ref_ptr<MatrixTransform> getTransform();
 };

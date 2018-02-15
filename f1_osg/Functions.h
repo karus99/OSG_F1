@@ -1,6 +1,6 @@
 #pragma once
 
-#include <osg/Quat>
+#include <osg\Quat>
 
 using namespace osg;
 

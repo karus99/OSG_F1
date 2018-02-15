@@ -118,3 +118,8 @@ void Car::setFacingAngle(double angle)
 	mat.setRotate(Functions::getQuatFromEuler(Vec3d(0.0, 0.0, angle), true));
 	this->carTransform->setMatrix(mat);
 }
+
+double Car::getFacingAngle()
+{
+	return this->zAngle;
+}

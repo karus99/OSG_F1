@@ -22,6 +22,29 @@ ref_ptr<Group> Game::createScene()
 	
 	this->scene->addChild(this->player->getTransform());
 
+	ref_ptr<Geode> track = new Geode();
+	track->addDrawable(new ShapeDrawable(new Box(Vec3d(0.0, 0.0, 3.0), 5000.0, 5000.0, 1.0)));
+
+	StateSet * stateSet = track->getOrCreateStateSet();
+	stateSet->ref();
+
+	Material * material = new Material();
+	Image * track_i = readImageFile("Data/Track/track.tga");
+
+	if (!track_i)
+	{
+		cout << "Couldn't load track textures." << endl;
+		return NULL;
+	}
+
+	Texture2D * track_t = new Texture2D;
+	track_t->setImage(track_i);
+
+	stateSet->setAttribute(material);
+	stateSet->setTextureAttributeAndModes(0, track_t, StateAttribute::ON);
+
+	this->scene->addChild(track);
+
 	return this->scene;
 }
 

@@ -4,9 +4,11 @@
 #include <vector>
 #include <osg/Geode>
 #include <osg/Geometry>
+#include <osg/Material>
 #include <osg/Matrix>
 #include <osg/MatrixTransform>
 #include <osg/ShapeDrawable>
+#include <osg/Texture2D>
 #include <osgViewer/Viewer>
 #include <osgDB/ReadFile>
 
