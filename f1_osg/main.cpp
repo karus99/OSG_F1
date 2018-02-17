@@ -69,6 +69,24 @@ public:
 		{
 			switch (keysPressed[i])
 			{
+			case 65470: // F1
+			{
+				if (cameraMode)
+				{
+					viewer->setCameraManipulator(new TrackballManipulator());
+				}
+				else
+				{
+					viewer->setCameraManipulator(NULL);
+					Vec3d eye(0.0, 600.0, 200.0);
+					Vec3d center(0.0, 0.0, 100.0);
+					Vec3d up(0.0, 0.0, 150.0);
+
+					viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
+				}
+				cameraMode = !cameraMode;
+				break;
+			}
 			case 119:
 			case 65362:
 			{
@@ -93,7 +111,7 @@ public:
 				Game * game = Game::getInstance(viewer);
 				Player * player = game->getPlayer();
 
-				player->addAngularSpeed(0.5f);
+				player->addAngularSpeed(0.25f);
 				break;
 			}
 			case 100:
@@ -102,7 +120,7 @@ public:
 				Game * game = Game::getInstance(viewer);
 				Player * player = game->getPlayer();
 
-				player->addAngularSpeed(-0.5f);
+				player->addAngularSpeed(-0.25f);
 				break;
 			}
 			}

@@ -9,5 +9,11 @@ using namespace osgGA;
 class Player : public Car
 {
 public:
-	Player(ref_ptr<Node> carNode, ref_ptr<MatrixTransform> carTransform);
+	Player(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, ref_ptr<Geode> carCollider);
+};
+
+class PlayerCollisionUpdateCallback : public NodeCallback
+{
+public:
+	virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 };

@@ -45,6 +45,13 @@ ref_ptr<Group> Game::createScene()
 
 	this->scene->addChild(track);
 
+	//barriers
+	PositionAttitudeTransform * barrier = this->createBarrier(Vec3d(0.0f, 0.0f, 0.0f), Functions::getQuatFromEuler(0.0, 0.0, 0.0, true));
+	this->barriers.push_back(barrier);
+
+	Optimizer optimzer;
+	optimzer.optimize(this->scene);
+
 	return this->scene;
 }
 
@@ -58,27 +65,38 @@ Player * Game::createPlayer()
 		return NULL;
 	}
 
-	ref_ptr<MatrixTransform> playerCarT = new MatrixTransform();
-	Matrix mat;
-	mat.setTrans(Vec3d(0.0, 0.0, 0.0));
-	playerCarT->setMatrix(mat);
+	ref_ptr<PositionAttitudeTransform> playerCarT = new PositionAttitudeTransform();
+	playerCarT->setPosition(Vec3d(0.0, 0.0, 20.0));
+	playerCarT->setPivotPoint(Vec3d(-31.0, 100.0, 20.0));
 
-	BoundingBox playerCarBB;
-	playerCarBB.init();
-	playerCarBB.expandBy(playerCar->getBound());
+	playerCarT->dirtyBound();
 
 	ref_ptr<Geode> playerCarBox = new Geode();
-	float x = playerCarBB.xMin() - playerCarBB.xMax();
-	float y = playerCarBB.yMin() - playerCarBB.yMax();
-	float z = playerCarBB.zMin() - playerCarBB.zMax();
 
-	cout << x << " " << y << " " << z << endl;
+	ref_ptr<PlayerCollisionUpdateCallback> updateCallback = new PlayerCollisionUpdateCallback();
+	playerCarT->addUpdateCallback(updateCallback);
 
-	playerCarBox->addDrawable(new ShapeDrawable(new Box(playerCarBB.center(), x, y, z)));
+	//ref_ptr<Group> decorator = new Group();
 
+	//playerCarBox->addDrawable(new ShapeDrawable(new Box(Vec3d(-31.0, -80.0, 30.0), 90, 180, 60)));
+
+	//decorator->addChild(playerCarBox);
+
+	//ref_ptr<StateSet> stateset = new StateSet;
+	//ref_ptr<PolygonOffset> polyoffset = new PolygonOffset;
+	//polyoffset->setFactor(-1.0f);
+	//polyoffset->setUnits(-1.0f);
+	//ref_ptr<PolygonMode> polymode = new PolygonMode;
+	//polymode->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
+	//stateset->setAttributeAndModes(polyoffset, StateAttribute::OVERRIDE | StateAttribute::ON);
+	//stateset->setAttributeAndModes(polymode, StateAttribute::OVERRIDE | StateAttribute::ON);
+	//stateset->setTextureMode(0, GL_TEXTURE_2D, StateAttribute::OVERRIDE | StateAttribute::OFF);
+	//decorator->setStateSet(stateset);
+
+	//playerCarT->addChild(decorator);
 	playerCarT->addChild(playerCar);
 
-	Player * player = new Player(playerCar, playerCarT);
+	Player * player = new Player(playerCar, playerCarT, playerCarBox);
 	player->setFacingAngle(0.0);
 	cars.push_back(player);
 
@@ -93,4 +111,52 @@ Player * Game::getPlayer()
 vector<Car *> Game::getCars()
 {
 	return this->cars;
+}
+
+vector<PositionAttitudeTransform *> Game::getBarriers()
+{
+	return this->barriers;
+}
+
+PositionAttitudeTransform * Game::createBarrier(Vec3d pos, Quat rot)
+{
+	Node * barrier = readNodeFile("Data/Track/barrier.3ds");
+
+	if (!barrier)
+	{
+		cout << "Couldn't load model ( Data/Track/barrier.3ds )." << endl;
+		return NULL;
+	}
+
+	PositionAttitudeTransform * barrierT = new PositionAttitudeTransform();
+	barrierT->setPosition(pos);
+	barrierT->setPivotPoint(Vec3d(0.0, 0.0, 0.0));
+	barrierT->setAttitude(rot);
+	barrierT->setScale(Vec3d(50.0, 50.0, 50.0));
+	barrierT->dirtyBound();
+
+	//ref_ptr<Group> decorator = new Group();
+
+	//Geode * barrierBox = new Geode();
+	//barrierBox->addDrawable(new ShapeDrawable(new Box(Vec3d(0, 0, 0), 10, 10, 10)));
+
+	//decorator->addChild(barrierBox);
+
+	//ref_ptr<StateSet> stateset = new StateSet;
+	//ref_ptr<PolygonOffset> polyoffset = new PolygonOffset;
+	//polyoffset->setFactor(-1.0f);
+	//polyoffset->setUnits(-1.0f);
+	//ref_ptr<PolygonMode> polymode = new PolygonMode;
+	//polymode->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
+	//stateset->setAttributeAndModes(polyoffset, StateAttribute::OVERRIDE | StateAttribute::ON);
+	//stateset->setAttributeAndModes(polymode, StateAttribute::OVERRIDE | StateAttribute::ON);
+	//stateset->setTextureMode(0, GL_TEXTURE_2D, StateAttribute::OVERRIDE | StateAttribute::OFF);
+	//decorator->setStateSet(stateset);
+
+	//barrierT->addChild(decorator);
+	barrierT->addChild(barrier);
+
+	this->scene->addChild(barrierT);
+
+	return barrierT;
 }

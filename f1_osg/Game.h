@@ -7,18 +7,23 @@
 #include <osg/Material>
 #include <osg/Matrix>
 #include <osg/MatrixTransform>
+#include <osg/PolygonMode>
+#include <osg/PolygonOffset>
+#include <osg/PositionAttitudeTransform>
 #include <osg/ShapeDrawable>
 #include <osg/Texture2D>
-#include <osgViewer/Viewer>
 #include <osgDB/ReadFile>
+#include <osgUtil/Optimizer>
+#include <osgViewer/Viewer>
 
 #include "Player.h"
 #include "Functions.h"
 
-using namespace std;
 using namespace osg;
-using namespace osgViewer;
 using namespace osgDB;
+using namespace osgUtil;
+using namespace osgViewer;
+using namespace std;
 
 class Game
 {
@@ -27,7 +32,8 @@ private:
 	ref_ptr<Group> scene = NULL;
 	Player * player = NULL;
 	ref_ptr<Viewer> viewer = NULL;
-	vector<Car *> cars;
+	vector<Car *> cars = vector<Car *>();
+	vector<PositionAttitudeTransform *> barriers = vector<PositionAttitudeTransform *>();
 
 protected:
 	Player * createPlayer();
@@ -39,4 +45,6 @@ public:
 	ref_ptr<Group> getScene();
 	Player * getPlayer();
 	vector<Car *> getCars();
+	vector<PositionAttitudeTransform *> getBarriers();
+	PositionAttitudeTransform * createBarrier(Vec3d pos, Quat rot);
 };

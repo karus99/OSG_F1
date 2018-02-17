@@ -10,8 +10,7 @@ void CameraUpdateCallback::operator()(osg::Node* node, osg::NodeVisitor* nv)
 	Game * game = Game::getInstance(NULL);
 	Player * player = game->getPlayer();
 
-	Matrix mat = player->getTransform()->getMatrix();
-	Vec3d pos = mat.getTrans();
+	Vec3d pos = player->getTransform()->getPosition();
 	double zRad = DegreesToRadians(player->getFacingAngle());
 
 	double x = pos.x() + (600.0 * sin(-zRad));
