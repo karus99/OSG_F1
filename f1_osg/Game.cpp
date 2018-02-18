@@ -49,6 +49,8 @@ ref_ptr<Group> Game::createScene()
 	Collider * barrier = this->createBarrier(Vec3d(0.0f, 0.0f, 0.0f), Functions::getQuatFromEuler(0.0, 0.0, 0.0, true));
 	this->barriers.push_back(barrier);
 
+	createLight();
+
 	Optimizer optimzer;
 	optimzer.optimize(this->scene);
 
@@ -70,14 +72,12 @@ Player * Game::createPlayer()
 	playerCarT->setPivotPoint(Vec3d(-31.0, 100.0, 20.0));
 	playerCarT->addChild(playerCar);
 
-	/*Geode * sphere = new Geode();
-	sphere->addDrawable(new ShapeDrawable(new Sphere(Vec3d(-31.0, 30.0, 20.0), 60.0)));
-	playerCarT->addChild(sphere);*/
+	Box * box = new Box(Vec3d(0.0, -68.0, 30.0), 70, 175, 60);
 
 	ref_ptr<PlayerCollisionUpdateCallback> updateCallback = new PlayerCollisionUpdateCallback();
 	playerCarT->addUpdateCallback(updateCallback);
 
-	Player * player = new Player(playerCar, playerCarT, NULL);
+	Player * player = new Player(playerCar, playerCarT, box);
 	player->setFacingAngle(0.0);
 	cars.push_back(player);
 
@@ -114,25 +114,38 @@ Collider * Game::createBarrier(Vec3d pos, Quat rot)
 	barrierT->setPivotPoint(Vec3d(0.0, 0.0, 0.0));
 	barrierT->setAttitude(rot);
 	barrierT->setScale(Vec3d(50.0, 50.0, 50.0));
-	barrierT->setInitialBound(BoundingSphere(pos, 60.0));
-	barrierT->setComputeBoundingSphereCallback(new DummyComputeBoundingSphereCallback());
-	cout << barrierT->getBound().radius() << endl;
-	cout << barrierT->getBound().center().x() << " " << barrierT->getBound().center().y() << endl;
 	barrierT->addChild(barrier);
 
-	/*Geode * sphere = new Geode();
-	sphere->addDrawable(new ShapeDrawable(new Sphere(Vec3d(0.0, 0.0, 0.0), 10.0)));
-	barrierT->addChild(sphere);*/
-
-	Geode * box = new Geode();
-	Box * box_s = new Box(Vec3d(0.0, 0.0, 0.0), 20.0, 40.0, 10.0);
-	ShapeDrawable * shape = new ShapeDrawable(box_s);
-	box->addDrawable(shape);
-	barrierT->addChild(box);
+	Box * box = new Box(pos, 140.0, 20.0, 80.0);
+	box->setRotation(rot);
 
 	this->scene->addChild(barrierT);
 
-	Collider * collider = new Collider(BoundingBox(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5), barrierT);
+	Collider * collider = new Collider(box, barrierT);
 
 	return collider;
+}
+
+ref_ptr<Group> Game::getScene()
+{
+	return this->scene;
+}
+
+void Game::createLight()
+{
+	StateSet* state = this->scene->getOrCreateStateSet();
+	state->setMode(GL_LIGHTING, StateAttribute::ON);
+	state->setMode(GL_LIGHT0, StateAttribute::ON); // for first light
+
+	ref_ptr<Light> light0 = new Light;
+	light0->setPosition(Vec4(0, 0, 100, 1.0));
+	light0->setAmbient(Vec4(1.0, 1.0, 1.0, 1.0));
+	light0->setDiffuse(Vec4(1.0, 1.0, 1.0, 1.0));
+	light0->setSpecular(Vec4(1, 1, 1, 1));
+	light0->setDirection(Vec3(0, 0, 0));
+	light0->setLightNum(0);
+
+	ref_ptr<LightSource> source0 = new LightSource;
+	source0->setLight(light0.get());
+	this->scene->addChild(source0);
 }

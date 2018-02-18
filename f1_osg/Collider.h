@@ -12,11 +12,11 @@ class Collider
 {
 private:
 	PositionAttitudeTransform * transform = NULL;
-	BoundingBox collider = BoundingBox();
+	ShapeDrawable * collider = NULL;
 	Geode * colliderNode = NULL;
 
 public:
-	Collider(BoundingBox collider, PositionAttitudeTransform * transform);
-	BoundingBox getCollider();
+	Collider(Box * collider, PositionAttitudeTransform * transform);
+	ShapeDrawable * getCollider();
 	PositionAttitudeTransform * getTransform();
 };

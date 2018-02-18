@@ -35,6 +35,8 @@ private:
 	vector<Car *> cars = vector<Car *>();
 	vector<Collider *> barriers = vector<Collider *>();
 
+	void createLight();
+
 protected:
 	Player * createPlayer();
 	Game(ref_ptr<Viewer> viewer);

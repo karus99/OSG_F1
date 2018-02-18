@@ -29,11 +29,11 @@ protected:
 	float angularSpeed = 0.0f;
 	ref_ptr<Node> carNode = NULL;
 	ref_ptr<PositionAttitudeTransform> carTransform = NULL;
-	BoundingBox * carCollider = NULL;
+	ShapeDrawable * carCollider = NULL;
 	vector<Collider *> colliders = vector<Collider *>();
 
 public:
-	Car(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, BoundingBox * carCollider);
+	Car(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, Box * carCollider);
 	void addSpeed(float amount);
 	float getSpeed();
 	void addAngularSpeed(float amount);
@@ -43,7 +43,7 @@ public:
 	void setFacingAngle(double angle);
 	double getFacingAngle();
 	ref_ptr<PositionAttitudeTransform> getTransform();
-	BoundingBox * getCollider();
+	ShapeDrawable * getCollider();
 	ref_ptr<Node> getNode();
 	void addCollider(Collider * collider);
 	bool findInColliders(Collider * collider);

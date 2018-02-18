@@ -1,11 +1,14 @@
 #include "Car.h"
 #include "Functions.h"
+#include "Game.h"
 
-Car::Car(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, BoundingBox * carCollider)
+Car::Car(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, Box * carCollider)
 {
 	this->carNode = carNode;
 	this->carTransform = carTransform;
-	this->carCollider = carCollider;
+
+	ShapeDrawable * shape = new ShapeDrawable(carCollider);
+	this->carCollider = shape;
 }
 
 void Car::addSpeed(float amount)
@@ -145,10 +148,14 @@ void Car::update()
 	double y = pos.y() - (this->speed * cos(-zRad));
 
 	this->carTransform->setPosition(Vec3d(x, y, pos.z()));
-	this->carTransform->setInitialBound(BoundingSphere(Vec3d(x, y, pos.z() + 20.0), 50.0));
-	this->carTransform->setComputeBoundingSphereCallback(new DummyComputeBoundingSphereCallback());/*
-	cout << this->carTransform->getBound().radius() << endl;
-	cout << this->carTransform->getBound().center().x() << " " << this->carTransform->getBound().center().y() << endl;*/
+
+	x = pos.x() - (68.0 * sin(-zRad));
+	y = pos.y() - (68.0 * cos(-zRad));
+
+	Box * box = new Box(Vec3d(x, y, pos.z() + 30.0), 70, 175, 60);
+	box->setRotation(Functions::getQuatFromEuler(0.0, 0.0, zRad));
+
+	this->carCollider = new ShapeDrawable(box);
 	this->carTransform->setAttitude(Functions::getQuatFromEuler(0.0, 0.0, this->zAngle, true));
 
 	// update colliders
@@ -172,7 +179,7 @@ double Car::getFacingAngle()
 	return this->zAngle;
 }
 
-BoundingBox * Car::getCollider()
+ShapeDrawable * Car::getCollider()
 {
 	return this->carCollider;
 }
@@ -203,7 +210,7 @@ void Car::updateColliders()
 {
 	for (int i = 0; i < this->colliders.size(); i++)
 	{
-		if (!this->carTransform->getBound().intersects(this->colliders[i]->getTransform()->getBound()))
+		if (!this->carCollider->getBoundingBox().intersects(this->colliders[i]->getCollider()->getBoundingBox()))
 		{
 			this->colliders.erase(this->colliders.begin() + i);
 			continue;
