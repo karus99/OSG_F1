@@ -151,6 +151,7 @@ int main(int argc, char * argv[])
 	viewer->addEventHandler(new StatsHandler);
 	viewer->addEventHandler(windowHandler);
 	viewer->addEventHandler(keyHandler);
+	viewer->setLightingMode(osg::View::LightingMode::HEADLIGHT);
 	viewer->realize();
 
 	Vec3d eye(0.0, 600.0, 200.0);
@@ -158,6 +159,7 @@ int main(int argc, char * argv[])
 	Vec3d up(0.0, 0.0, 150.0);
 
 	viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
+	viewer->getCamera()->setClearColor(Vec4(1, 1, 1, 1.0));
 
 	ref_ptr<CameraUpdateCallback> cameraUpdateCallback = new CameraUpdateCallback(viewer);
 	viewer->getCamera()->addUpdateCallback(cameraUpdateCallback);

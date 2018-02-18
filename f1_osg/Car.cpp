@@ -1,7 +1,7 @@
 #include "Car.h"
 #include "Functions.h"
 
-Car::Car(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, ref_ptr<Geode> carCollider)
+Car::Car(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, BoundingBox * carCollider)
 {
 	this->carNode = carNode;
 	this->carTransform = carTransform;
@@ -55,7 +55,7 @@ void Car::update()
 	for (int i = 0; i < this->colliders.size(); i++)
 	{
 		Vec3d carPos = this->carTransform->getPosition();
-		Vec3d colPos = this->colliders[i]->getPosition();
+		Vec3d colPos = this->colliders[i]->getTransform()->getPosition();
 
 		double zRad = DegreesToRadians(this->zAngle);
 
@@ -80,6 +80,8 @@ void Car::update()
 			{
 				this->speed = 0;
 			}
+
+
 		}
 		else
 		{
@@ -143,6 +145,10 @@ void Car::update()
 	double y = pos.y() - (this->speed * cos(-zRad));
 
 	this->carTransform->setPosition(Vec3d(x, y, pos.z()));
+	this->carTransform->setInitialBound(BoundingSphere(Vec3d(x, y, pos.z() + 20.0), 50.0));
+	this->carTransform->setComputeBoundingSphereCallback(new DummyComputeBoundingSphereCallback());/*
+	cout << this->carTransform->getBound().radius() << endl;
+	cout << this->carTransform->getBound().center().x() << " " << this->carTransform->getBound().center().y() << endl;*/
 	this->carTransform->setAttitude(Functions::getQuatFromEuler(0.0, 0.0, this->zAngle, true));
 
 	// update colliders
@@ -166,7 +172,7 @@ double Car::getFacingAngle()
 	return this->zAngle;
 }
 
-ref_ptr<Geode> Car::getCollider()
+BoundingBox * Car::getCollider()
 {
 	return this->carCollider;
 }
@@ -176,12 +182,12 @@ ref_ptr<Node> Car::getNode()
 	return this->carNode;
 }
 
-void Car::addCollider(PositionAttitudeTransform * collider)
+void Car::addCollider(Collider * collider)
 {
 	this->colliders.push_back(collider);
 }
 
-bool Car::findInColliders(PositionAttitudeTransform * collider)
+bool Car::findInColliders(Collider * collider)
 {
 	for (int i = 0; i < this->colliders.size(); i++)
 	{
@@ -195,15 +201,12 @@ bool Car::findInColliders(PositionAttitudeTransform * collider)
 
 void Car::updateColliders()
 {
-	cout << "Colides with: ";
 	for (int i = 0; i < this->colliders.size(); i++)
 	{
-		if (!this->carTransform->getBound().intersects(this->colliders[i]->getBound()))
+		if (!this->carTransform->getBound().intersects(this->colliders[i]->getTransform()->getBound()))
 		{
 			this->colliders.erase(this->colliders.begin() + i);
 			continue;
 		}
-		cout << i << ", ";
 	}
-	cout << endl;
 }

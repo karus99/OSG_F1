@@ -46,7 +46,7 @@ ref_ptr<Group> Game::createScene()
 	this->scene->addChild(track);
 
 	//barriers
-	PositionAttitudeTransform * barrier = this->createBarrier(Vec3d(0.0f, 0.0f, 0.0f), Functions::getQuatFromEuler(0.0, 0.0, 0.0, true));
+	Collider * barrier = this->createBarrier(Vec3d(0.0f, 0.0f, 0.0f), Functions::getQuatFromEuler(0.0, 0.0, 0.0, true));
 	this->barriers.push_back(barrier);
 
 	Optimizer optimzer;
@@ -68,35 +68,16 @@ Player * Game::createPlayer()
 	ref_ptr<PositionAttitudeTransform> playerCarT = new PositionAttitudeTransform();
 	playerCarT->setPosition(Vec3d(0.0, 0.0, 20.0));
 	playerCarT->setPivotPoint(Vec3d(-31.0, 100.0, 20.0));
+	playerCarT->addChild(playerCar);
 
-	playerCarT->dirtyBound();
-
-	ref_ptr<Geode> playerCarBox = new Geode();
+	/*Geode * sphere = new Geode();
+	sphere->addDrawable(new ShapeDrawable(new Sphere(Vec3d(-31.0, 30.0, 20.0), 60.0)));
+	playerCarT->addChild(sphere);*/
 
 	ref_ptr<PlayerCollisionUpdateCallback> updateCallback = new PlayerCollisionUpdateCallback();
 	playerCarT->addUpdateCallback(updateCallback);
 
-	//ref_ptr<Group> decorator = new Group();
-
-	//playerCarBox->addDrawable(new ShapeDrawable(new Box(Vec3d(-31.0, -80.0, 30.0), 90, 180, 60)));
-
-	//decorator->addChild(playerCarBox);
-
-	//ref_ptr<StateSet> stateset = new StateSet;
-	//ref_ptr<PolygonOffset> polyoffset = new PolygonOffset;
-	//polyoffset->setFactor(-1.0f);
-	//polyoffset->setUnits(-1.0f);
-	//ref_ptr<PolygonMode> polymode = new PolygonMode;
-	//polymode->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
-	//stateset->setAttributeAndModes(polyoffset, StateAttribute::OVERRIDE | StateAttribute::ON);
-	//stateset->setAttributeAndModes(polymode, StateAttribute::OVERRIDE | StateAttribute::ON);
-	//stateset->setTextureMode(0, GL_TEXTURE_2D, StateAttribute::OVERRIDE | StateAttribute::OFF);
-	//decorator->setStateSet(stateset);
-
-	//playerCarT->addChild(decorator);
-	playerCarT->addChild(playerCar);
-
-	Player * player = new Player(playerCar, playerCarT, playerCarBox);
+	Player * player = new Player(playerCar, playerCarT, NULL);
 	player->setFacingAngle(0.0);
 	cars.push_back(player);
 
@@ -113,12 +94,12 @@ vector<Car *> Game::getCars()
 	return this->cars;
 }
 
-vector<PositionAttitudeTransform *> Game::getBarriers()
+vector<Collider *> Game::getBarriers()
 {
 	return this->barriers;
 }
 
-PositionAttitudeTransform * Game::createBarrier(Vec3d pos, Quat rot)
+Collider * Game::createBarrier(Vec3d pos, Quat rot)
 {
 	Node * barrier = readNodeFile("Data/Track/barrier.3ds");
 
@@ -133,30 +114,25 @@ PositionAttitudeTransform * Game::createBarrier(Vec3d pos, Quat rot)
 	barrierT->setPivotPoint(Vec3d(0.0, 0.0, 0.0));
 	barrierT->setAttitude(rot);
 	barrierT->setScale(Vec3d(50.0, 50.0, 50.0));
-	barrierT->dirtyBound();
-
-	//ref_ptr<Group> decorator = new Group();
-
-	//Geode * barrierBox = new Geode();
-	//barrierBox->addDrawable(new ShapeDrawable(new Box(Vec3d(0, 0, 0), 10, 10, 10)));
-
-	//decorator->addChild(barrierBox);
-
-	//ref_ptr<StateSet> stateset = new StateSet;
-	//ref_ptr<PolygonOffset> polyoffset = new PolygonOffset;
-	//polyoffset->setFactor(-1.0f);
-	//polyoffset->setUnits(-1.0f);
-	//ref_ptr<PolygonMode> polymode = new PolygonMode;
-	//polymode->setMode(PolygonMode::FRONT_AND_BACK, PolygonMode::LINE);
-	//stateset->setAttributeAndModes(polyoffset, StateAttribute::OVERRIDE | StateAttribute::ON);
-	//stateset->setAttributeAndModes(polymode, StateAttribute::OVERRIDE | StateAttribute::ON);
-	//stateset->setTextureMode(0, GL_TEXTURE_2D, StateAttribute::OVERRIDE | StateAttribute::OFF);
-	//decorator->setStateSet(stateset);
-
-	//barrierT->addChild(decorator);
+	barrierT->setInitialBound(BoundingSphere(pos, 60.0));
+	barrierT->setComputeBoundingSphereCallback(new DummyComputeBoundingSphereCallback());
+	cout << barrierT->getBound().radius() << endl;
+	cout << barrierT->getBound().center().x() << " " << barrierT->getBound().center().y() << endl;
 	barrierT->addChild(barrier);
+
+	/*Geode * sphere = new Geode();
+	sphere->addDrawable(new ShapeDrawable(new Sphere(Vec3d(0.0, 0.0, 0.0), 10.0)));
+	barrierT->addChild(sphere);*/
+
+	Geode * box = new Geode();
+	Box * box_s = new Box(Vec3d(0.0, 0.0, 0.0), 20.0, 40.0, 10.0);
+	ShapeDrawable * shape = new ShapeDrawable(box_s);
+	box->addDrawable(shape);
+	barrierT->addChild(box);
 
 	this->scene->addChild(barrierT);
 
-	return barrierT;
+	Collider * collider = new Collider(BoundingBox(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5), barrierT);
+
+	return collider;
 }

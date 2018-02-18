@@ -5,6 +5,8 @@
 #include <osg\Geode>
 #include <osg\PositionAttitudeTransform>
 
+#include "Collider.h"
+
 #define CAR_MAX_SPEED		40.0f
 #define CAR_MAX_SPEED_BACK -5.0f
 #define CAR_SPEED_DROP		0.2f
@@ -27,11 +29,11 @@ protected:
 	float angularSpeed = 0.0f;
 	ref_ptr<Node> carNode = NULL;
 	ref_ptr<PositionAttitudeTransform> carTransform = NULL;
-	ref_ptr<Geode> carCollider = NULL;
-	vector<PositionAttitudeTransform *> colliders = vector<PositionAttitudeTransform *>();
+	BoundingBox * carCollider = NULL;
+	vector<Collider *> colliders = vector<Collider *>();
 
 public:
-	Car(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, ref_ptr<Geode> carCollider);
+	Car(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, BoundingBox * carCollider);
 	void addSpeed(float amount);
 	float getSpeed();
 	void addAngularSpeed(float amount);
@@ -41,8 +43,8 @@ public:
 	void setFacingAngle(double angle);
 	double getFacingAngle();
 	ref_ptr<PositionAttitudeTransform> getTransform();
-	ref_ptr<Geode> getCollider();
+	BoundingBox * getCollider();
 	ref_ptr<Node> getNode();
-	void addCollider(PositionAttitudeTransform * collider);
-	bool findInColliders(PositionAttitudeTransform * collider);
+	void addCollider(Collider * collider);
+	bool findInColliders(Collider * collider);
 };

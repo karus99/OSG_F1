@@ -33,7 +33,7 @@ private:
 	Player * player = NULL;
 	ref_ptr<Viewer> viewer = NULL;
 	vector<Car *> cars = vector<Car *>();
-	vector<PositionAttitudeTransform *> barriers = vector<PositionAttitudeTransform *>();
+	vector<Collider *> barriers = vector<Collider *>();
 
 protected:
 	Player * createPlayer();
@@ -45,6 +45,6 @@ public:
 	ref_ptr<Group> getScene();
 	Player * getPlayer();
 	vector<Car *> getCars();
-	vector<PositionAttitudeTransform *> getBarriers();
-	PositionAttitudeTransform * createBarrier(Vec3d pos, Quat rot);
+	vector<Collider *> getBarriers();
+	Collider * createBarrier(Vec3d pos, Quat rot);
 };

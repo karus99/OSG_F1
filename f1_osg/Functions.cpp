@@ -71,3 +71,13 @@ namespace Functions
 			return Vec3d(bank, heading, attitude);
 	}
 }
+
+BoundingSphere DummyComputeBoundingSphereCallback::computeBound(Node * node)
+{
+	return BoundingSphere();
+}
+
+BoundingBox DummyComputeBoundingBoxCallback::computeBound(const Drawable &) const
+{
+	return BoundingBox();
+}

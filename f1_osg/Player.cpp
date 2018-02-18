@@ -2,7 +2,7 @@
 #include "Game.h"
 #include "Player.h"
 
-Player::Player(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, ref_ptr<Geode> carCollider) : Car(carNode, carTransform, carCollider)
+Player::Player(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, BoundingBox * carCollider) : Car(carNode, carTransform, carCollider)
 {
 
 }
@@ -14,13 +14,13 @@ void PlayerCollisionUpdateCallback::operator()(osg::Node* node, osg::NodeVisitor
 
 	BoundingSphere bBox = player->getTransform()->getBound();
 
-	vector<PositionAttitudeTransform *> barriers = game->getBarriers();
+	vector<Collider *> barriers = game->getBarriers();
 
 	bool found = false;
 
 	for (int i = 0; i < barriers.size(); i++)
 	{
-		if (bBox.intersects(barriers[i]->getBound()))
+		if (bBox.intersects(barriers[i]->getTransform()->getBound()))
 		{
 			if (!player->findInColliders(barriers[i]))
 			{

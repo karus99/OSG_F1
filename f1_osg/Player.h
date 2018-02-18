@@ -9,7 +9,7 @@ using namespace osgGA;
 class Player : public Car
 {
 public:
-	Player(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, ref_ptr<Geode> carCollider);
+	Player(ref_ptr<Node> carNode, ref_ptr<PositionAttitudeTransform> carTransform, BoundingBox * carCollider);
 };
 
 class PlayerCollisionUpdateCallback : public NodeCallback
