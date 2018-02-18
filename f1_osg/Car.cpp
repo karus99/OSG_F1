@@ -75,25 +75,25 @@ void Car::update()
 		double distanceFront = sqrt(pow(colPos.x() - frontPoint.x(), 2) + pow(colPos.y() - frontPoint.y(), 2) + pow(colPos.z() - frontPoint.z(), 2));
 		double distanceBack = sqrt(pow(colPos.x() - backPoint.x(), 2) + pow(colPos.y() - backPoint.y(), 2) + pow(colPos.z() - backPoint.z(), 2));
 
+		double force = this->speed * (5 / CAR_MAX_SPEED);
+
 		if (distanceFront < distanceBack)
 		{
 			collisionMoveState |= CAR_COLLISION_FRONT;
 
+			this->colliders[i]->move(5.0 + force, zRad);
+
 			if (this->speed > 0)
-			{
 				this->speed = 0;
-			}
-
-
 		}
 		else
 		{
 			collisionMoveState |= CAR_COLLISION_BACK;
 
 			if (this->speed < 0)
-			{
 				this->speed = 0;
-			}
+
+			this->colliders[i]->move(-5.0 + force, zRad);
 		}
 	}
 

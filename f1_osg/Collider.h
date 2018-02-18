@@ -19,4 +19,5 @@ public:
 	Collider(Box * collider, PositionAttitudeTransform * transform);
 	ShapeDrawable * getCollider();
 	PositionAttitudeTransform * getTransform();
+	void move(double distance, double angle);
 };
