@@ -138,10 +138,15 @@ void Car::update()
 
 	Vec3d pos = this->carTransform->getPosition();
 
-	if (this->speed != 0)
+	if (this->speed > 0)
 	{
-		this->zAngle += this->angularSpeed;
+		this->zAngle += this->angularSpeed - (this->angularSpeed * ((this->speed / CAR_MAX_SPEED) * CAR_SPEED_TURN_FACTOR));
 	}
+	else if (this->speed < 0)
+	{
+		this->zAngle -= this->angularSpeed;
+	}
+
 	double zRad = DegreesToRadians(this->zAngle);
 
 	double x = pos.x() - (this->speed * sin(-zRad));
