@@ -57,4 +57,5 @@ public:
 
 	void addCollider(Collider * collider);
 	bool findInColliders(Collider * collider);
+	vector<Collider *> getCollisions();
 };

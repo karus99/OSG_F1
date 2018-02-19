@@ -57,6 +57,11 @@ void Car::update()
 
 	for (int i = 0; i < this->colliders.size(); i++)
 	{
+		if (!this->colliders[i]->state)
+		{
+			continue;
+		}
+
 		Vec3d carPos = this->carTransform->getPosition();
 		Vec3d colPos = this->colliders[i]->getTransform()->getPosition();
 
@@ -76,12 +81,11 @@ void Car::update()
 		double distanceBack = sqrt(pow(colPos.x() - backPoint.x(), 2) + pow(colPos.y() - backPoint.y(), 2) + pow(colPos.z() - backPoint.z(), 2));
 
 		double force = this->speed * (5 / CAR_MAX_SPEED);
+		double moveSpeed = 5.0f;
 
 		if (distanceFront < distanceBack)
 		{
 			collisionMoveState |= CAR_COLLISION_FRONT;
-
-			this->colliders[i]->move(5.0 + force, zRad);
 
 			if (this->speed > 0)
 				this->speed = 0;
@@ -93,7 +97,21 @@ void Car::update()
 			if (this->speed < 0)
 				this->speed = 0;
 
-			this->colliders[i]->move(-5.0 + force, zRad);
+			moveSpeed = -5.0f;
+		}
+
+		switch (this->colliders[i]->getColliderType())
+		{
+		case COLLIDER_BARRIER:
+		{
+			this->colliders[i]->move(moveSpeed + force, zRad);
+			break;
+		}
+		case COLLIDER_CAR:
+		{
+			this->colliders[i]->registerHit(10.0f);
+			break;
+		}
 		}
 	}
 
@@ -231,4 +249,9 @@ void Car::addColliderNode(Collider * collider)
 Collider * Car::getColliderNode()
 {
 	return this->colliderNode;
+}
+
+vector<Collider *> Car::getCollisions()
+{
+	return this->colliders;
 }

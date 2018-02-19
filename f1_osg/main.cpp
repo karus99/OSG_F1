@@ -69,6 +69,12 @@ public:
 				cout << "Collider * barrier = this->createBarrier(Vec3d(" << pos.x() << ".0f, " << pos.y() << ".0f, " << pos.z() << ".0f), " << zAngle << ");" << endl;
 				break;
 			}
+			case 118:
+			{
+				Game * game = Game::getInstance(viewer);
+				game->setNextCameraMode();
+				break;
+			}
 			}
 
 			bool found = false;
@@ -208,14 +214,14 @@ int main(int argc, char * argv[])
 	viewer->setLightingMode(osg::View::LightingMode::HEADLIGHT);
 	viewer->realize();
 
-	editorBarrier = game->createBarrier(Vec3d(), 0.0);
+	editorBarrier = game->createBarrier(Vec3d(-2695.0f, 1080.0f, 0.0f), -91);
 
 	Vec3d eye(0.0, 600.0, 200.0);
 	Vec3d center(0.0, 0.0, 100.0);
 	Vec3d up(0.0, 0.0, 150.0);
 
 	viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
-	viewer->getCamera()->setClearColor(Vec4(0.8, 0.8, 0.8, 1.0));
+	viewer->getCamera()->setClearColor(Vec4(1, 1, 1, 1.0));
 
 	ref_ptr<CameraUpdateCallback> cameraUpdateCallback = new CameraUpdateCallback(viewer);
 	viewer->getCamera()->addUpdateCallback(cameraUpdateCallback);

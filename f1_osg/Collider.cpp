@@ -1,5 +1,6 @@
 #include "Collider.h"
 #include "Functions.h"
+#include "Game.h"
 
 Collider::Collider(Box * collider, PositionAttitudeTransform * transform, double zAngle, int colliderType)
 {
@@ -85,4 +86,81 @@ void Collider::setTransform(Vec3d pos, double zAngle)
 double Collider::getFacingAngle()
 {
 	return this->zAngle;
+}
+
+int Collider::getColliderType()
+{
+	return this->colliderType;
+}
+
+void Collider::registerHit(double force)
+{
+	this->health -= force;
+
+	if (this->health <= 0.0f)
+	{
+		Game * game = Game::getInstance(NULL);
+		Player * player = game->getPlayer();
+
+		vector<Collider *> barriers = game->getBarriers();
+		vector<Collider *> collisions = player->getCollisions();
+		Group * scene = game->getScene();
+
+		for (int i = 0; i < barriers.size(); i++)
+		{
+			if (barriers[i]->getTransform() == this->transform)
+			{
+				barriers.erase(barriers.begin() + i);
+			}
+		}
+
+		this->state = false;
+
+		Vec3 wind(1.0f, 0.0f, 0.0f);
+		Vec3 pos(this->transform->getPosition());
+
+		double zRad = DegreesToRadians(this->zAngle);
+
+		double x = pos.x() - (10.0 * sin(-zRad));
+		double y = pos.y() - (10.0 * cos(-zRad));
+
+		ExplosionEffect* explosion = new ExplosionEffect(Vec3d(x, y, 20.0), 40.0f);
+		ExplosionDebrisEffect* explosionDebri = new ExplosionDebrisEffect(Vec3d(x, y, 20.0), 40.0f);
+		SmokeEffect* smoke = new SmokeEffect(Vec3d(x, y, 20.0), 40.0f);
+		FireEffect* fire = new FireEffect(Vec3d(x, y, 20.0), 40.0f);
+
+		explosion->setWind(wind);
+		explosionDebri->setWind(wind);
+		smoke->setWind(wind);
+		fire->setWind(wind);
+
+		scene->addChild(explosion);
+		scene->addChild(explosionDebri);
+		scene->addChild(smoke);
+		scene->addChild(fire);
+
+		scene->removeChild(this->transform);
+		return;
+	}
+
+	if (this->health <= 190.0f)
+	{
+		Vec3 wind(1.0f, 0.0f, 0.0f);
+		Vec3 pos(this->transform->getPosition());
+
+		double zRad = DegreesToRadians(this->zAngle);
+
+		double x = pos.x() - (10.0 * sin(-zRad));
+		double y = pos.y() - (10.0 * cos(-zRad));
+
+		SmokeEffect* smoke = new SmokeEffect(Vec3d(x, y, 20.0), 40.0f);
+		FireEffect* fire = new FireEffect(Vec3d(x, y, 20.0), 40.0f);
+
+		smoke->setWind(wind);
+		fire->setWind(wind);
+
+		this->transform->addChild(smoke);
+		this->transform->addChild(fire);
+		return;
+	}
 }

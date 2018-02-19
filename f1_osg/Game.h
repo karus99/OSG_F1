@@ -34,6 +34,7 @@ private:
 	ref_ptr<Viewer> viewer = NULL;
 	vector<Car *> cars = vector<Car *>();
 	vector<Collider *> barriers = vector<Collider *>();
+	int cameraMode = -1;
 
 	void createLight();
 
@@ -50,4 +51,6 @@ public:
 	vector<Car *> getCars();
 	vector<Collider *> getBarriers();
 	Collider * createBarrier(Vec3d pos, double zAngle);
+	int getCameraMode();
+	void setNextCameraMode();
 };
