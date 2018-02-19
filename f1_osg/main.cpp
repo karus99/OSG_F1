@@ -17,6 +17,8 @@ using namespace std;
 
 void getDesktopResolution(int& horizontal, int& vertical);
 
+Collider * editorBarrier = NULL;
+
 class KeyHandler : public GUIEventHandler
 {
 private:
@@ -36,10 +38,38 @@ public:
 		{
 		case(GUIEventAdapter::KEYDOWN):
 		{
-			// 65362, 119 - up
-			// 65361, 97 - left
-			// 65363, 100 - right
-			// 65364, 115 - down
+			switch (ea.getKey())
+			{
+			case 65470: // F1
+			{
+				if (cameraMode)
+				{
+					viewer->setCameraManipulator(new TrackballManipulator());
+				}
+				else
+				{
+					viewer->setCameraManipulator(NULL);
+					Vec3d eye(0.0, 600.0, 200.0);
+					Vec3d center(0.0, 0.0, 100.0);
+					Vec3d up(0.0, 0.0, 150.0);
+
+					viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
+				}
+				cameraMode = !cameraMode;
+				break;
+			}
+			case 99:
+			{
+				Vec3d pos = editorBarrier->getTransform()->getPosition();
+				double zAngle = editorBarrier->getFacingAngle();
+
+				Game * game = Game::getInstance(viewer);
+				editorBarrier = game->createBarrier(Vec3d(pos.x(), pos.y(), pos.z()), zAngle);
+
+				cout << "Collider * barrier = this->createBarrier(Vec3d(" << pos.x() << ".0f, " << pos.y() << ".0f, " << pos.z() << ".0f), " << zAngle << ");" << endl;
+				break;
+			}
+			}
 
 			bool found = false;
 			for (int i = 0; i < keysPressed.size(); i++)
@@ -69,24 +99,6 @@ public:
 		{
 			switch (keysPressed[i])
 			{
-			case 65470: // F1
-			{
-				if (cameraMode)
-				{
-					viewer->setCameraManipulator(new TrackballManipulator());
-				}
-				else
-				{
-					viewer->setCameraManipulator(NULL);
-					Vec3d eye(0.0, 600.0, 200.0);
-					Vec3d center(0.0, 0.0, 100.0);
-					Vec3d up(0.0, 0.0, 150.0);
-
-					viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
-				}
-				cameraMode = !cameraMode;
-				break;
-			}
 			case 119:
 			case 65362:
 			{
@@ -123,6 +135,48 @@ public:
 				player->addAngularSpeed(-0.25f);
 				break;
 			}
+			case 105:
+			{
+				Vec3d pos = editorBarrier->getTransform()->getPosition();
+				double zAngle = editorBarrier->getFacingAngle();
+				editorBarrier->setTransform(Vec3d(pos.x(), pos.y() - 5.0, pos.z()), zAngle);
+				break;
+			}
+			case 107:
+			{
+				Vec3d pos = editorBarrier->getTransform()->getPosition();
+				double zAngle = editorBarrier->getFacingAngle();
+				editorBarrier->setTransform(Vec3d(pos.x(), pos.y() + 5.0, pos.z()), zAngle);
+				break;
+			}
+			case 106:
+			{
+				Vec3d pos = editorBarrier->getTransform()->getPosition();
+				double zAngle = editorBarrier->getFacingAngle();
+				editorBarrier->setTransform(Vec3d(pos.x() + 5.0, pos.y(), pos.z()), zAngle);
+				break;
+			}
+			case 108:
+			{
+				Vec3d pos = editorBarrier->getTransform()->getPosition();
+				double zAngle = editorBarrier->getFacingAngle();
+				editorBarrier->setTransform(Vec3d(pos.x() - 5.0, pos.y(), pos.z()), zAngle);
+				break;
+			}
+			case 112:
+			{
+				Vec3d pos = editorBarrier->getTransform()->getPosition();
+				double zAngle = editorBarrier->getFacingAngle();
+				editorBarrier->setTransform(Vec3d(pos.x(), pos.y(), pos.z()), zAngle - 1.0);
+				break;
+			}
+			case 111:
+			{
+				Vec3d pos = editorBarrier->getTransform()->getPosition();
+				double zAngle = editorBarrier->getFacingAngle();
+				editorBarrier->setTransform(Vec3d(pos.x(), pos.y(), pos.z()), zAngle + 1.0);
+				break;
+			}
 			}
 		}
 
@@ -153,6 +207,8 @@ int main(int argc, char * argv[])
 	viewer->addEventHandler(keyHandler);
 	viewer->setLightingMode(osg::View::LightingMode::HEADLIGHT);
 	viewer->realize();
+
+	editorBarrier = game->createBarrier(Vec3d(), 0.0);
 
 	Vec3d eye(0.0, 600.0, 200.0);
 	Vec3d center(0.0, 0.0, 100.0);

@@ -48,5 +48,5 @@ public:
 	Player * getPlayer();
 	vector<Car *> getCars();
 	vector<Collider *> getBarriers();
-	Collider * createBarrier(Vec3d pos, Quat rot);
+	Collider * createBarrier(Vec3d pos, double zAngle);
 };

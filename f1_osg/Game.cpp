@@ -23,7 +23,7 @@ ref_ptr<Group> Game::createScene()
 	this->scene->addChild(this->player->getTransform());
 
 	ref_ptr<Geode> track = new Geode();
-	track->addDrawable(new ShapeDrawable(new Box(Vec3d(0.0, 0.0, 3.0), 5000.0, 5000.0, 1.0)));
+	track->addDrawable(new ShapeDrawable(new Box(Vec3d(0.0, 0.0, 3.0), 10000.0, 10000.0, 1.0)));
 
 	StateSet * stateSet = track->getOrCreateStateSet();
 	stateSet->ref();
@@ -39,6 +39,8 @@ ref_ptr<Group> Game::createScene()
 
 	Texture2D * track_t = new Texture2D;
 	track_t->setImage(track_i);
+	track_t->setUseHardwareMipMapGeneration(true);
+	track_t->setMaxAnisotropy(16.0f);
 
 	stateSet->setAttribute(material);
 	stateSet->setTextureAttributeAndModes(0, track_t, StateAttribute::ON);
@@ -46,7 +48,69 @@ ref_ptr<Group> Game::createScene()
 	this->scene->addChild(track);
 
 	//barriers
-	Collider * barrier = this->createBarrier(Vec3d(0.0f, 0.0f, 0.0f), Functions::getQuatFromEuler(0.0, 0.0, 0.0, true));
+	/*Collider * barrier = this->createBarrier(Vec3d(0.0f, 0.0f, 0.0f), 0.0);
+	this->barriers.push_back(barrier);*/
+
+	// barriers
+	Collider * barrier = this->createBarrier(Vec3d(-2695.0f, 1080.0f, 0.0f), -91);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2695.0f, 910.0f, 0.0f), -90);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2695.0f, 710.0f, 0.0f), -90);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2695.0f, 525.0f, 0.0f), -90);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2695.0f, 340.0f, 0.0f), -91);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2705.0f, 110.0f, 0.0f), -91);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2715.0f, -110.0f, 0.0f), -91);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2735.0f, -385.0f, 0.0f), -94);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2760.0f, -635.0f, 0.0f), -101);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2830.0f, -850.0f, 0.0f), -116);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2680.0f, 1285.0f, 0.0f), -91);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2675.0f, 1510.0f, 0.0f), -91);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2675.0f, 1715.0f, 0.0f), -84);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2730.0f, 1905.0f, 0.0f), -64);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2805.0f, 2065.0f, 0.0f), -64);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-2930.0f, 2155.0f, 0.0f), -42);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3065.0f, 2245.0f, 0.0f), -25);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-4205.0f, 2460.0f, 0.0f), -25);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-4065.0f, 2385.0f, 0.0f), -25);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3915.0f, 2295.0f, 0.0f), -25);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3760.0f, 2200.0f, 0.0f), -29);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3615.0f, 2095.0f, 0.0f), -41);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3525.0f, 1965.0f, 0.0f), -71);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3510.0f, 1770.0f, 0.0f), -111);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3565.0f, -875.0f, 0.0f), -33);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3510.0f, -1045.0f, 0.0f), -102);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3570.0f, -1225.0f, 0.0f), -117);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3675.0f, -1365.0f, 0.0f), -133);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3800.0f, -1520.0f, 0.0f), -133);
+	this->barriers.push_back(barrier);
+	barrier = this->createBarrier(Vec3d(-3920.0f, -1660.0f, 0.0f), -133);
 	this->barriers.push_back(barrier);
 
 	createLight();
@@ -99,7 +163,7 @@ vector<Collider *> Game::getBarriers()
 	return this->barriers;
 }
 
-Collider * Game::createBarrier(Vec3d pos, Quat rot)
+Collider * Game::createBarrier(Vec3d pos, double zAngle)
 {
 	Node * barrier = readNodeFile("Data/Track/barrier.3ds");
 
@@ -109,19 +173,38 @@ Collider * Game::createBarrier(Vec3d pos, Quat rot)
 		return NULL;
 	}
 
+	StateSet * stateSet = barrier->getOrCreateStateSet();
+	stateSet->ref();
+
+	Material * material = new Material();
+	Image * barrier_i = readImageFile("Data/Track/concrete.jpg");
+
+	if (!barrier_i)
+	{
+		cout << "Couldn't load barrier textures." << endl;
+		return NULL;
+	}
+
+	Texture2D * barrier_t = new Texture2D;
+	barrier_t->setImage(barrier_i);
+	barrier_t->setUseHardwareMipMapGeneration(true);
+	barrier_t->setMaxAnisotropy(16.0f);
+	stateSet->setAttribute(material);
+	stateSet->setTextureAttributeAndModes(0, barrier_t, StateAttribute::ON);
+
 	PositionAttitudeTransform * barrierT = new PositionAttitudeTransform();
 	barrierT->setPosition(pos);
 	barrierT->setPivotPoint(Vec3d(0.0, 0.0, 0.0));
-	barrierT->setAttitude(rot);
+	barrierT->setAttitude(Functions::getQuatFromEuler(0.0, 0.0, zAngle, true));
 	barrierT->setScale(Vec3d(50.0, 50.0, 50.0));
 	barrierT->addChild(barrier);
 
 	Box * box = new Box(pos, 140.0, 20.0, 80.0);
-	box->setRotation(rot);
+	box->setRotation(Functions::getQuatFromEuler(0.0, 0.0, zAngle, true));
 
 	this->scene->addChild(barrierT);
 
-	Collider * collider = new Collider(box, barrierT);
+	Collider * collider = new Collider(box, barrierT, zAngle);
 
 	return collider;
 }
