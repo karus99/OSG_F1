@@ -215,7 +215,7 @@ int main(int argc, char * argv[])
 	Vec3d up(0.0, 0.0, 150.0);
 
 	viewer->getCamera()->setViewMatrixAsLookAt(eye, center, up);
-	viewer->getCamera()->setClearColor(Vec4(1, 1, 1, 1.0));
+	viewer->getCamera()->setClearColor(Vec4(0.8, 0.8, 0.8, 1.0));
 
 	ref_ptr<CameraUpdateCallback> cameraUpdateCallback = new CameraUpdateCallback(viewer);
 	viewer->getCamera()->addUpdateCallback(cameraUpdateCallback);

@@ -113,6 +113,32 @@ ref_ptr<Group> Game::createScene()
 	barrier = this->createBarrier(Vec3d(-3920.0f, -1660.0f, 0.0f), -133);
 	this->barriers.push_back(barrier);
 
+	// cars
+	Car * car = this->createCar(Vec3d(-4135.0f, 1260.0f, 20.0f), 0);
+	this->scene->addChild(car->getTransform());
+	this->barriers.push_back(car->getColliderNode());
+	car = this->createCar(Vec3d(-3945.0f, 1260.0f, 20.0f), 0);
+	this->scene->addChild(car->getTransform());
+	this->barriers.push_back(car->getColliderNode());
+	car = this->createCar(Vec3d(-3760.0f, 1260.0f, 20.0f), 0);
+	this->scene->addChild(car->getTransform());
+	this->barriers.push_back(car->getColliderNode());
+	car = this->createCar(Vec3d(-3575.0f, 1260.0f, 20.0f), 0);
+	this->scene->addChild(car->getTransform());
+	this->barriers.push_back(car->getColliderNode());
+	car = this->createCar(Vec3d(-3575.0f, -665.0f, 20.0f), 180);
+	this->scene->addChild(car->getTransform());
+	this->barriers.push_back(car->getColliderNode());
+	car = this->createCar(Vec3d(-3745.0f, -665.0f, 20.0f), 180);
+	this->scene->addChild(car->getTransform());
+	this->barriers.push_back(car->getColliderNode());
+	car = this->createCar(Vec3d(-3910.0f, -660.0f, 20.0f), 180);
+	this->scene->addChild(car->getTransform());
+	this->barriers.push_back(car->getColliderNode());
+	car = this->createCar(Vec3d(-4080.0f, -660.0f, 20.0f), 180);
+	this->scene->addChild(car->getTransform());
+	this->barriers.push_back(car->getColliderNode());
+
 	createLight();
 
 	Optimizer optimzer;
@@ -204,7 +230,7 @@ Collider * Game::createBarrier(Vec3d pos, double zAngle)
 
 	this->scene->addChild(barrierT);
 
-	Collider * collider = new Collider(box, barrierT, zAngle);
+	Collider * collider = new Collider(box, barrierT, zAngle, COLLIDER_BARRIER);
 
 	return collider;
 }
@@ -231,4 +257,38 @@ void Game::createLight()
 	ref_ptr<LightSource> source0 = new LightSource;
 	source0->setLight(light0.get());
 	this->scene->addChild(source0);
+}
+
+Car * Game::createCar(Vec3d pos, double angle)
+{
+	ref_ptr<Node> car = readNodeFile("Data/Car/car.3ds");
+
+	if (!car)
+	{
+		cout << "Couldn't load model ( Data/Car/car.3ds )." << endl;
+		return NULL;
+	}
+
+	ref_ptr<PositionAttitudeTransform> carT = new PositionAttitudeTransform();
+	carT->setPosition(pos);
+	carT->setPivotPoint(Vec3d(-31.0, 100.0, 20.0));
+	carT->setAttitude(Functions::getQuatFromEuler(0.0, 0.0, angle, true));
+	carT->addChild(car);
+
+	double zRad = DegreesToRadians(angle);
+
+	double x = pos.x() - (68.0 * sin(-zRad));
+	double y = pos.y() - (68.0 * cos(-zRad));
+
+	Box * box = new Box(Vec3d(x, y, 30.0), 70, 175, 60);
+	box->setRotation(Functions::getQuatFromEuler(0.0, 0.0, angle, true));
+
+	Car * carO = new Car(car, carT, box);
+	carO->setFacingAngle(angle);
+	cars.push_back(carO);
+
+	Collider * collider = new Collider(box, carT, angle, COLLIDER_CAR);
+	carO->addColliderNode(collider);
+
+	return carO;
 }

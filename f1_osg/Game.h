@@ -46,6 +46,7 @@ public:
 	ref_ptr<Group> createScene();
 	ref_ptr<Group> getScene();
 	Player * getPlayer();
+	Car * createCar(Vec3d pos, double angle);
 	vector<Car *> getCars();
 	vector<Collider *> getBarriers();
 	Collider * createBarrier(Vec3d pos, double zAngle);

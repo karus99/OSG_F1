@@ -222,3 +222,13 @@ void Car::updateColliders()
 		}
 	}
 }
+
+void Car::addColliderNode(Collider * collider)
+{
+	this->colliderNode = collider;
+}
+
+Collider * Car::getColliderNode()
+{
+	return this->colliderNode;
+}
